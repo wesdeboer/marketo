@@ -5,6 +5,7 @@ A PHP client for the Marketo SOAP API.
 ## Usage
 
  - [get_lead_by](#getting-a-lead)
+ - [get_leads_by_list](#getting-leads-by-list)
  - [sync_lead](#creating-or-updating-a-lead)
  - [add_to_campaign](#adding-leads-to-campaigns)
  - [get_campaigns](#getting-campaigns)
@@ -49,6 +50,30 @@ $marketo_client->get_lead_by('email', 'ben@benubois.com');
 ```
 
 This will return an array of lead objects or `FALSE` if not found. The result will always be an array whether there are one or more leads found.
+
+### Getting Leads By List
+
+You can also get a collection of leads by a static list using the  `get_leads_by_list($list, $args)` method.
+
+**Arguments**
+
+`$list` - The name of the static list as is shown in Marketo.
+
+`$args` - An array of optional arguments to pass to the method.
+
+ - `batchSize` - The number of leads to return, default 100.
+ - `includeAttributes` - An array of attributes that you would like returned back from Marketo. This allows you to limit the data coming back, (eg: FirstName, LastName, Email, MarketoSocialTwitterDisplayName)
+ - `lastUpdatedAt` - Time lead was last updated or created.
+ - `streamPostion` - Used for paging. Value is filled in by API and must be returned on subsequent calls when paging. When present, the lastUpdateAt value is ignored.
+
+**Examples**
+
+``` php
+<?php
+$marketo_client->get_lead_by_list('Twitter List', array('Email', 'MarketoSocialTwitterDisplayName'));
+```
+
+This will return an array of lead objects. Each lead object will only have the provided attributes (Email, MarketoSocialTwitterDisplayName) if available.
 
 ### Creating or updating a lead
 
