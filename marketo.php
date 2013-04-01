@@ -19,13 +19,83 @@ class Marketo
 		$this->encryption_key = $encryption_key;
 		$this->soap_host = $soap_host;
 		
-		$soap_end_point = "https://{$this->soap_host}/soap/mktows/1_8";
+		$soap_end_point = "https://{$this->soap_host}/soap/mktows/2_0";
 
 		$options = array("connection_timeout" => 20, "location" => $soap_end_point);
 		
 		$wsdl_url = $soap_end_point . '?WSDL';
 
 		$this->soap_client = new soapClient($wsdl_url, $options);
+	}
+
+	// Pubic: Get a list of leads
+	//
+	// $list - The name of the static list of leads that you would like to retrieve.
+	// This should be a valid list within Marketo.
+	//
+	// $args - Array of possible arguments outlined below:
+	//
+	// $batchSize - Number of entries to return default 100
+	//
+	// $includeAttributes - An array of fields you would like to retrieve. This allows you to only
+	// retrieve the Email or the FirstName or MarketoSocialTwitterDisplayName for example.
+	//
+	// $lastUpdatedAt - Time lead was last updated or created
+	//
+	// $streamPosition - Used for paging. Value is filled in by API and must
+	// be returned on subsequent calls when paging.
+	// When present, the lastUpdateAt value is ignored.
+	// 
+	// Examples
+	// 
+	//  `$client->get_multiple_leads('Twitter List', array('Email', 'MarketoSocialTwitterDisplayName'));`
+	// 
+	// Returns an object containing lead data or FALSE if no lead was found
+	public function get_leads_by_list($list, $args)
+	{
+		$params = new stdClass;
+
+		$leadSelector = new stdClass;
+		$leadSelector->staticListName = $list;
+		$params->leadSelector = new SoapVar($leadSelector, SOAP_ENC_OBJECT, 'StaticListSelector', "http://www.marketo.com/mktows/");
+
+		if (isset($args['includeAttributes'])) {
+			$attributes = new stdClass;
+			$attributes->stringItem = $args['includeAttributes'];
+			$params->includeAttributes = $attributes;
+		}
+
+		if (isset($args['batchSize'])) {
+			$params->batchSize = $args['batchSize'];
+		}
+
+		if (isset($args['lastUpdatedAt'])) {
+			$params->lastUpdatedAt = $args['lastUpdatedAt'];
+		}
+
+		if (isset($args['streamPosition'])) {
+			$params->streamPosition = $args['streamPosition'];
+		}
+
+		try 
+		{
+			$result = $this->request('getMultipleLeads', $params);
+			$leads = $this->format_leads($result);
+		}
+		catch (Exception $e) 
+		{
+			if (isset($e->detail->serviceException->code) && $e->detail->serviceException->code == '20103') 
+			{
+				// No leads were found
+				$leads = FALSE;
+			}
+			else
+			{
+				throw new Exception($e, 1);
+			}
+		}
+		
+		return $leads;
 	}
 	
 	// Public: Get a lead record
@@ -278,6 +348,9 @@ class Marketo
 	// 
 	// Returns and array flattened array of attributes
 	// 
+	// TODO: currently accepts an array of attributes but when using
+	// get_leads_by_list there can be a single attribute as object
+	// from the use of the includeAttributes arg.
 	protected function flatten_attributes($attributes)
 	{
 		$php_types = array('integer', 'string', 'boolean', 'float');
