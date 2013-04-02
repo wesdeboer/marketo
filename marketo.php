@@ -348,13 +348,17 @@ class Marketo
 	// 
 	// Returns and array flattened array of attributes
 	// 
-	// TODO: currently accepts an array of attributes but when using
-	// get_leads_by_list there can be a single attribute as object
-	// from the use of the includeAttributes arg.
 	protected function flatten_attributes($attributes)
 	{
 		$php_types = array('integer', 'string', 'boolean', 'float');
 		$attributes_array = array();
+
+		// One record comes back as an object but two comes as an array of objects, just 
+		// make them both arrays of objects
+		if (is_object($attributes))
+		{
+			$attributes = array($attributes);
+		}
 		foreach ($attributes as $attribute)
 		{
 			if (is_object($attribute))
