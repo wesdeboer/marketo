@@ -51,7 +51,7 @@ class Marketo
 	//  `$client->get_multiple_leads('Twitter List', array('Email', 'MarketoSocialTwitterDisplayName'));`
 	// 
 	// Returns an object containing lead data or FALSE if no lead was found
-	public function get_leads_by_list($list, $args)
+	public function get_leads_by_list($list, $args = array())
 	{
 		$params = new stdClass;
 
