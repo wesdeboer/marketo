@@ -28,7 +28,7 @@ class Marketo
 		$this->soap_client = new soapClient($wsdl_url, $options);
 	}
 
-	// Pubic: Get a list of leads
+	// Public: Get a list of leads
 	//
 	// $list - The name of the static list of leads that you would like to retrieve.
 	// This should be a valid list within Marketo.
