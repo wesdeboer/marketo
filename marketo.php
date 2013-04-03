@@ -231,7 +231,7 @@ class Marketo
 	//     $client->add_to_campaign(321, $leads);
 	// 
 	// Returns true if successful false if not
-	public function add_to_campaign($campaign_key, $leads)
+	public function add_to_campaign($campaign_key, $leads, $program_name = null, $user_tokens = array())
 	{
 		$lead_keys = array();
 		foreach ($leads as $type => $value)
@@ -252,6 +252,19 @@ class Marketo
 		$params  = new stdClass;
 		$params->leadList = $lead_keys;
 		$params->source = 'MKTOWS';
+		$params->programName = $program_name;
+
+		$token = new stdClass;
+		$key = key($user_tokens);
+		$token->name = $key;
+		$token->value = $user_tokens[$key];
+
+		$tokens = array($token);
+
+		$tokenList = new stdClass;
+		$tokenList->attrib = $tokens;
+
+		$params->programTokenList = $tokenList;
 		
 		if (is_numeric($campaign_key)) 
 		{
