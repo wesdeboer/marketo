@@ -107,7 +107,7 @@ This will return the updated or created lead object.
 
 ### Adding leads to campaigns
 
-You can add leads to a campaign using the `add_to_campaign($campaign_key, $leads)` method.
+You can add leads to a campaign using the `add_to_campaign($campaign_key, $leads, $program_name, $user_tokens)` method.
 
 **Arguments**
 
@@ -118,6 +118,10 @@ You can add leads to a campaign using the `add_to_campaign($campaign_key, $leads
  - `idnum` - The Marketo lead ID
  - `sdfccontantid` - The Salesforce Contact ID
  - `sfdcleadid` - The Salesforce Lead ID
+
+`$program_name` - Optional program name, required if you are to be using $user_tokens. Allows you to define tokens that can have custom values that can be used in your campaign. When using this option the `$campaign_key` must be the campaign name, use of campaign id will result in an error.
+
+`$user_tokens` - An optional associative array with a key of token name (eg: {{my.Token}}) and the value being a string of your choosing that will override the custom token value available in the previously supplied program. When using this option the `$campaign_key` must be the campaign name, use of campaign id will result in an error.
 
 **Examples**
 
@@ -138,6 +142,15 @@ $leads = array(
 );
 	
 $client->add_to_campaign(321, $leads);
+```
+
+Add a single lead to a campaign with a custom token value
+
+``` php
+<?php
+$lead = array('idnum' => '123456');
+$token = array('{{my.Token}}' => 'this is my custom message');
+$client->add_to_campaign('My Campaign', $lead, 'My Program', $token);
 ```
 
 Returns `TRUE` if successful `FALSE` if not
