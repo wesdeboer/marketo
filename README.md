@@ -70,7 +70,7 @@ You can also get a collection of leads by a static list using the  `get_leads_by
 
 ``` php
 <?php
-$marketo_client->get_leads_by_list('Twitter List', array('Email', 'MarketoSocialTwitterDisplayName'));
+$marketo_client->get_leads_by_list('Twitter List', array('batchSize' => 25, 'includeAttributes' => array('Email', 'MarketoSocialTwitterDisplayName')));
 ```
 
 This will return an array of lead objects. Each lead object will only have the provided attributes (Email, MarketoSocialTwitterDisplayName) if available.
