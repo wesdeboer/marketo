@@ -11,17 +11,24 @@ class Marketo
 	
 	// Internal: The host name of the soap endpoint, i.e. na-c.marketo.com
 	protected $soap_host;
+
+	// Internal: Debugging
+	protected $debug = false;
+
+	// Internal: Log File
+	protected $log_file = '/tmp/marketo.log';
 	
 	// Public: Initialize a new Marketo API instance.
-	public function __construct($user_id, $encryption_key, $soap_host)
+	public function __construct($user_id, $encryption_key, $soap_host, $debug = false)
 	{
 		$this->user_id = $user_id;
 		$this->encryption_key = $encryption_key;
 		$this->soap_host = $soap_host;
+		$this->debug = $debug;
 		
 		$soap_end_point = "https://{$this->soap_host}/soap/mktows/2_0";
 
-		$options = array("connection_timeout" => 20, "location" => $soap_end_point);
+		$options = array("connection_timeout" => 20, "location" => $soap_end_point, "trace" => $this->debug);
 		
 		$wsdl_url = $soap_end_point . '?WSDL';
 
@@ -415,7 +422,27 @@ class Marketo
 	// Returns the SOAP request result
 	protected function request($operation, $params)
 	{
-		return $this->soap_client->__soapCall($operation, array($params), array(), $this->authentication_header());
+		$soapCall = $this->soap_client->__soapCall($operation, array($params), array(), $this->authentication_header());
+		if ($this->debug) {
+			$this->log($this->soap_client->__getLastRequest(),'Request');
+			$this->log($this->soap_client->__getLastResponse(),'Response');
+		}
+		return $soapCall;
+	}
+
+	// Log to file helper
+	//
+	// $content - The content to log
+	// $type	- Keyword to log the message as
+	//
+	// Returns null
+	private function log($content, $type = 'Debug')
+	{
+		$fp = fopen($this->log_file, 'a+');
+		fwrite($fp, date('c') . ' ' . $type . ': ' . $content . "\n");
+		fclose($fp);
+
+		return;
 	}
 	
 }
