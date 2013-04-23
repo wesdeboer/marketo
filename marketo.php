@@ -87,7 +87,11 @@ class Marketo
 		try 
 		{
 			$result = $this->request('getMultipleLeads', $params);
-			$leads = $this->format_leads($result);
+			if (isset($result->returnCount) && $result->returnCount > 0) {
+				$leads = $this->format_leads($result);
+			} else {
+				$leads = FALSE;
+			}
 		}
 		catch (Exception $e) 
 		{
@@ -134,7 +138,11 @@ class Marketo
 		try 
 		{
 			$result = $this->request('getLead', $lead);
-			$leads = $this->format_leads($result);
+			if (isset($result->returnCount) && $result->returnCount > 0) {
+				$leads = $this->format_leads($result);
+			} else {
+				$leads = FALSE;
+			}
 		}
 		catch (Exception $e) 
 		{
