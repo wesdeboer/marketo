@@ -13,13 +13,13 @@ class Marketo
 	protected $soap_host;
 
 	// Internal: Debugging
-	protected $debug = false;
+	protected $debug = FALSE;
 
 	// Internal: Log File
 	protected $log_file = '/tmp/marketo.log';
 	
 	// Public: Initialize a new Marketo API instance.
-	public function __construct($user_id, $encryption_key, $soap_host, $debug = false)
+	public function __construct($user_id, $encryption_key, $soap_host, $debug = FALSE)
 	{
 		$this->user_id = $user_id;
 		$this->encryption_key = $encryption_key;
@@ -245,7 +245,7 @@ class Marketo
 	//     );
 	//     $client->add_to_campaign(321, $leads);
 	// 
-	// Returns true if successful false if not
+	// Returns true if successful FALSE if not
 	public function add_to_campaign($campaign_key, $leads, $program_name = null, $user_tokens = array())
 	{
 		$lead_keys = array();
