@@ -138,7 +138,7 @@ class Marketo
 		try 
 		{
 			$result = $this->request('getLead', $lead);
-			if (isset($result->result->returnCount) && $result->result->returnCount > 0) {
+			if (isset($result->result->count) && $result->result->count > 0) {
 				$leads = $this->format_leads($result);
 			} else {
 				$leads = FALSE;
